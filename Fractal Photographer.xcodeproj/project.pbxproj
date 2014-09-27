@@ -13,6 +13,7 @@
 		9B08A9B119D74EED00C22C1A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9B08A9B019D74EED00C22C1A /* Images.xcassets */; };
 		9B08A9B419D74EED00C22C1A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9B08A9B219D74EED00C22C1A /* LaunchScreen.xib */; };
 		9B08A9C019D74EED00C22C1A /* Fractal_PhotographerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B08A9BF19D74EED00C22C1A /* Fractal_PhotographerTests.swift */; };
+		9B08A9CA19D74FDE00C22C1A /* FractalModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B08A9C919D74FDE00C22C1A /* FractalModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -36,6 +37,7 @@
 		9B08A9B919D74EED00C22C1A /* Fractal PhotographerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Fractal PhotographerTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		9B08A9BE19D74EED00C22C1A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9B08A9BF19D74EED00C22C1A /* Fractal_PhotographerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fractal_PhotographerTests.swift; sourceTree = "<group>"; };
+		9B08A9C919D74FDE00C22C1A /* FractalModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FractalModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -59,6 +61,7 @@
 		9B08A99B19D74EED00C22C1A = {
 			isa = PBXGroup;
 			children = (
+				9B08A9C919D74FDE00C22C1A /* FractalModel.swift */,
 				9B08A9A619D74EED00C22C1A /* Fractal Photographer */,
 				9B08A9BC19D74EED00C22C1A /* Fractal PhotographerTests */,
 				9B08A9A519D74EED00C22C1A /* Products */,
@@ -213,6 +216,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9B08A9AC19D74EED00C22C1A /* ViewController.swift in Sources */,
+				9B08A9CA19D74FDE00C22C1A /* FractalModel.swift in Sources */,
 				9B08A9AA19D74EED00C22C1A /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
