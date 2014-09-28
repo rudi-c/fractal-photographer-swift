@@ -11,7 +11,6 @@ import Foundation
 class FractalModel {
     var offsetX: Double = 0.0
     var offsetY: Double = 0.0
-    var zoom: Double = 1.0
     var maxIterations: Int = 30
 
     var _pixelWidth: Int = 0;
@@ -23,6 +22,15 @@ class FractalModel {
         get { return _pixelHeight; }
     }
 
+    var _zoom = 0.5
+    var zoom: Double {
+        get { return _zoom }
+        set(value) {
+            _zoom = value
+            maxIterations = Int(30.0 * sqrt(sqrt(_zoom / 0.5)))
+        }
+    }
+
     var imageBytes : UnsafeMutablePointer<Byte>;
 
     init() {
@@ -32,12 +40,20 @@ class FractalModel {
     func setSize(p: (Int, Int)) {
         let oldByteLength = _pixelWidth * _pixelHeight * 4
         (_pixelWidth, _pixelHeight) = p
+        println(_pixelWidth)
+        println(_pixelHeight)
         let newByteLength = _pixelWidth * _pixelHeight * 4
 
         if (imageBytes != nil) {
             imageBytes.destroy(oldByteLength)
         }
         imageBytes = UnsafeMutablePointer<Byte>.alloc(newByteLength)
+    }
+
+    func translate(p: (Double, Double)) {
+        let (x, y) = p
+        offsetX += x / Double(_pixelHeight) / zoom
+        offsetY += y / Double(_pixelHeight) / zoom
     }
 
     func render() {
@@ -56,8 +72,8 @@ class FractalModel {
 
     func renderAt(p: (Int, Int)) -> (Byte, Byte, Byte) {
         let (x, y) = p
-        let cx = Double(x) / Double(_pixelWidth) / zoom
-        let cy = Double(y) / Double(_pixelHeight) / zoom
+        let cx = Double(x - _pixelWidth / 2) / Double(_pixelHeight) / zoom + offsetX
+        let cy = Double(y - _pixelHeight / 2) / Double(_pixelHeight) / zoom + offsetY
         var zx = cx
         var zy = cy
 
@@ -79,10 +95,14 @@ class FractalModel {
             zy += cy
         }
 
-        let fIter = Double(iterations)
-        let r = Byte(255.0 * (1.0 + sin(fIter * 1.0)) / 2.0)
-        let b = Byte(255.0 * (1.0 + sin(fIter * 1.3)) / 2.0)
-        let g = Byte(255.0 * (1.0 + sin(fIter * 1.8)) / 2.0)
-        return (r, b, g)
+        if (iterations == maxIterations) {
+            return (0, 0, 0)
+        } else {
+            let fIter = log(Double(iterations) + 1) * 14
+            let r = Byte(255.0 * (1.0 + sin(fIter * 0.16)) / 2.0)
+            let b = Byte(255.0 * (1.0 + sin(fIter * 0.22)) / 2.0)
+            let g = Byte(255.0 * (1.0 + sin(fIter * 0.38)) / 2.0)
+            return (r, b, g)
+        }
     }
 }

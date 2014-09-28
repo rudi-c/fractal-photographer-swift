@@ -8,11 +8,15 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+class ViewController: UIViewController, UIGestureRecognizerDelegate {
     @IBOutlet var renderView: UIImageView!
+    @IBOutlet var displayView: UIImageView!
 
     let fractalModel = FractalModel()
     var renderImage : UIImage
+
+    var originalCenter = CGPoint()
+    var originalCenterPinch = CGPoint()
 
     required init(coder aDecoder: NSCoder)
     {
@@ -27,8 +31,20 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        fractalModel.setSize(Int(renderView.bounds.size.width),
-            Int(renderView.bounds.size.height))
+        let panRecognizer = UIPanGestureRecognizer(target: self,
+            action:Selector("handlePan:"))
+        panRecognizer.delegate = self
+        view.addGestureRecognizer(panRecognizer)
+
+        let pinchRecognizer = UIPinchGestureRecognizer(target: self,
+            action:Selector("handlePinch:"))
+        pinchRecognizer.delegate = self
+        view.addGestureRecognizer(pinchRecognizer)
+
+        let bounds = UIScreen.mainScreen().bounds
+        fractalModel.setSize(Int(bounds.size.width), Int(bounds.size.height))
+
+        originalCenter = renderView.center
 
         render()
     }
@@ -36,6 +52,52 @@ class ViewController: UIViewController {
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+
+    func gestureRecognizer(UIGestureRecognizer,
+        shouldRecognizeSimultaneouslyWithGestureRecognizer:UIGestureRecognizer) -> Bool {
+            // Currently, it's a bit hard to handle scale and pan at the same time.
+            return false
+    }
+
+    func handlePan(recognizer: UIPanGestureRecognizer) {
+        switch recognizer.state {
+        case UIGestureRecognizerState.Began:
+            originalCenterPinch = renderView.center
+        case UIGestureRecognizerState.Ended:
+            fractalModel.translate(
+                Double(originalCenter.x - renderView.center.x),
+                Double(originalCenter.y - renderView.center.y))
+            render()
+            renderView.center = originalCenter
+        default:
+            let translation = recognizer.translationInView(renderView)
+            renderView.center = CGPoint(x:renderView.center.x + translation.x,
+                y:renderView.center.y + translation.y)
+            recognizer.setTranslation(CGPointZero, inView: renderView)
+        }
+    }
+
+    func handlePinch(recognizer: UIPinchGestureRecognizer) {
+        switch recognizer.state {
+        case UIGestureRecognizerState.Began:
+            originalCenterPinch = renderView.center
+        case UIGestureRecognizerState.Ended:
+            let t = renderView.transform
+
+            // The two should be the same.
+            let xscale = sqrt(t.a * t.a + t.c * t.c)
+            let yscale = sqrt(t.b * t.b + t.d * t.d)
+
+            renderView.transform = CGAffineTransformIdentity
+            renderView.center = originalCenter
+            render()
+        default:
+            fractalModel.zoom *= Double(recognizer.scale)
+            renderView.transform = CGAffineTransformScale(renderView.transform,
+                recognizer.scale, recognizer.scale)
+            recognizer.scale = 1
+        }
     }
 
     // http://stackoverflow.com/questions/7650144/how-to-convert-bytearray-to-image-in-objective-c
